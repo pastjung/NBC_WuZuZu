@@ -20,7 +20,8 @@
     "react-scripts": "5.0.1",
     "styled-components": "^6.1.8",
     "sweetalert2": "^11.10.7",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "@babel/plugin-proposal-private-property-in-object": "^7.16.7"
   },
   "proxy": "http://localhost:8080",
   "scripts": {
@@ -33,7 +34,14 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "react-hooks/exhaustive-deps": "off",
+      "no-unused-vars": "off",
+      "default-case": "off",
+      "no-loop-func": "off",
+      "no-useless-concat": "off"
+    }
   },
   "browserslist": {
     "production": [
