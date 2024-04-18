@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Multi-Room Chat</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2.2.1/src/js.cookie.min.js"></script>
+    <script src="/js/basic.js"></script>
+    <script src="/js/chatting.js"></script>
+</head>
+<body>
+<div class="container">
+    <div id="room-list">
+        <h3>채팅방 목록</h3>
+        <div>
+            <button id="my-rooms-btn" class="btn btn-primary">내 채팅방</button>
+            <button id="find-rooms-btn" class="btn btn-primary">채팅방 찾기</button>
+        </div>
+        <div>
+            <label for="new-room-name">새로운 방 이름 : </label>
+            <input type="text" id="new-room-name" placeholder="새로운 방 이름">
+            <label for="new-room-desc">새로운 방 설명 : </label>
+            <input type="text" id="new-room-desc" placeholder="새로운 방 설명">
+            <button id="create-room" class="btn btn-primary">방 생성</button>
+        </div>
+        <ul id="my-rooms-list" style="display: none;"></ul>
+        <ul id="find-rooms-list" style="display: none;"></ul>
+    </div>
+    <div id="chat-area" style="display: none">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>채팅 내용</h3>
+                <table id="messageTable" class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>사용자 이름</th>
+                        <th>메시지</th>
+                    </tr>
+                    </thead>
+                    <tbody id="messageList"></tbody>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h3>메시지 보내기</h3>
+                <label for="messageInput">메세지 입력 : </label>
+                <input type="text" id="messageInput" placeholder="메시지 입력">
+                <button id="sendMessage" class="btn btn-primary">보내기</button>
+                <button id="exitRoom" class="btn btn-primary">나가기</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
