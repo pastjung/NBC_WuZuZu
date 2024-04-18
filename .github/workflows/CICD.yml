@@ -23,23 +23,25 @@ jobs:
           node-version: '14'
           npm: 'latest'
 
-      - name: make .env
-        run: |
-          cd src/main/wuzuzu_fe
-          touch .env
-        shell: bash
-
-      - name: Generate .env
-        run: |
-          echo "REACT_APP_IMP=$REACT_APP_IMP" >> .env
-          echo "REACT_APP_IMP_KAKAO=$REACT_APP_IMP_KAKAO" >> .env
-        shell: bash
-        env:
-          REACT_APP_IMP: ${{ secrets.REACT_APP_IMP }}
-          REACT_APP_IMP_KAKAO: ${{ secrets.REACT_APP_IMP_KAKAO }}
+#      - name: make .env
+#        run: |
+#          cd src/main/wuzuzu_fe
+#          touch .env
+#        shell: bash
+#
+#      - name: Generate .env
+#        run: |
+#          cd src/main/wuzuzu_fe
+#          echo "REACT_APP_IMP=$REACT_APP_IMP" >> .env
+#          echo "REACT_APP_IMP_KAKAO=$REACT_APP_IMP_KAKAO" >> .env
+#        shell: bash
+#        env:
+#          REACT_APP_IMP: ${{ secrets.REACT_APP_IMP }}
+#          REACT_APP_IMP_KAKAO: ${{ secrets.REACT_APP_IMP_KAKAO }}
 
       - name: Install frontend dependencies
         run: |
+          cd src/main/wuzuzu_fe
           npm install
           cd ..
 
