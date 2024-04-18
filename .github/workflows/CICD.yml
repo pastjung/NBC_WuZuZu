@@ -26,13 +26,13 @@ jobs:
       - name: make .env
         run: |
           cd src/main/wuzuzu_fe
-          touch ./.env
+          touch .env
         shell: bash
 
       - name: Generate .env
         run: |
-          echo "REACT_APP_IMP=$REACT_APP_IMP" >> ./.env
-          echo "REACT_APP_IMP_KAKAO=$REACT_APP_IMP_KAKAO" >> ./.env
+          echo "REACT_APP_IMP=$REACT_APP_IMP" >> .env
+          echo "REACT_APP_IMP_KAKAO=$REACT_APP_IMP_KAKAO" >> .env
         shell: bash
         env:
           REACT_APP_IMP: ${{ secrets.REACT_APP_IMP }}
