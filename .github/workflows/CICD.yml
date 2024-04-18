@@ -147,13 +147,19 @@ jobs:
           aws-region: ap-northeast-2
 
       - name: Upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://wuzuzu/wuzuzuPublishTest/$GITHUB_SHA.zip
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://"${{ S3_BUCKET_NAME }}"/wuzuzu/$GITHUB_SHA.zip
+        env:
+          S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
 
       - name: Code Deploy To EC2 instance
         run: aws deploy create-deployment
-          --application-name wuzuzu
+          --application-name "$CODE_DEPLOY_APP_NAME"
           --deployment-config-name CodeDeployDefault.AllAtOnce
-          --deployment-group-name wuzuzu
-          --s3-location bucket=wuzuzu,bundleType=zip,key=wuzuzuPublishTest/$GITHUB_SHA.zip
+          --deployment-group-name "$DEPLOYMENT_GROUP_NAME"
+          --s3-location bucket="${{ S3_BUCKET_NAME }}",bundleType=zip,key=wuzuzu/$GITHUB_SHA.zip
+        env:
+          S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+          CODE_DEPLOY_APP_NAME: ${{ CODE_DEPLOY_APP_NAME }}
+          DEPLOYMENT_GROUP_NAME: ${{ DEPLOYMENT_GROUP_NAME }}
 
 
