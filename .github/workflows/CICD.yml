@@ -158,11 +158,11 @@ jobs:
         run: aws deploy create-deployment
           --application-name $CODE_DEPLOY_APP_NAME
           --deployment-config-name CodeDeployDefault.AllAtOnce
-          --deployment-group-name "$DEPLOYMENT_GROUP_NAME"
-          --s3-location bucket="${{ S3_BUCKET_NAME }}",bundleType=zip,key=wuzuzu/$GITHUB_SHA.zip
+          --deployment-group-name $DEPLOYMENT_GROUP_NAME
+          --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=wuzuzu/$GITHUB_SHA.zip
         env:
           S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
-          CODE_DEPLOY_APP_NAME: ${{ CODE_DEPLOY_APP_NAME }}
-          DEPLOYMENT_GROUP_NAME: ${{ DEPLOYMENT_GROUP_NAME }}
+          CODE_DEPLOY_APP_NAME: ${{ secrets.CODE_DEPLOY_APP_NAME }}
+          DEPLOYMENT_GROUP_NAME: ${{ secrets.DEPLOYMENT_GROUP_NAME }}
 
 
