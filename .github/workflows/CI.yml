@@ -1,0 +1,141 @@
+name: Build and Deploy to EC2
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: 17
+          distribution: 'adopt'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          npm: 'latest'
+
+      - name: make .env
+        run: |
+          cd src/main/wuzuzu_fe
+          touch .env
+        shell: bash
+
+      - name: Generate .env
+        run: |
+          cd src/main/wuzuzu_fe
+          echo "REACT_APP_IMP=$REACT_APP_IMP" >> .env
+          echo "REACT_APP_IMP_KAKAO=$REACT_APP_IMP_KAKAO" >> .env
+        shell: bash
+        env:
+          REACT_APP_IMP: ${{ secrets.REACT_APP_IMP }}
+          REACT_APP_IMP_KAKAO: ${{ secrets.REACT_APP_IMP_KAKAO }}
+
+      - name: Install frontend dependencies
+        run: |
+          npm install
+          cd ..
+
+      - name: make application.properties
+        run: |
+          mkdir -p ./resources 
+          cd ./resources
+          touch ./application.properties
+        shell: bash
+
+      - name: Generate application.properties
+        run: |
+          echo "spring.application.name=wuzuzu" > ./src/main/resources/application.properties
+          
+          echo "spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver" >> ./src/main/resources/application.properties
+          echo "spring.datasource.url=$MYSQL_URL" >> ./src/main/resources/application.properties
+          echo "spring.datasource.username=$MYSQL_USERNAME" >> ./src/main/resources/application.properties
+          echo "spring.datasource.password=$MYSQL_PASSWORD" >> ./src/main/resources/application.properties
+          
+          echo "spring.jpa.hibernate.ddl-auto=update" >> ./src/main/resources/application.properties
+          echo "spring.jpa.properties.hibernate.show_sql=false" >> ./src/main/resources/application.properties
+          echo "spring.jpa.properties.hibernate.format_sql=true" >> ./src/main/resources/application.properties
+          echo "spring.jpa.properties.hibernate.use_sql_comments=true" >> ./src/main/resources/application.properties
+          
+          echo "spring.data.redis.host=$REDIS_URL" >> ./src/main/resources/application.properties
+          echo "spring.data.redis.port=$REDIS_PORT" >> ./src/main/resources/application.properties
+          
+          echo "cloud.aws.region.static=$AWS_REGION" >> ./src/main/resources/application.properties
+          echo "cloud.aws.stack.auto-=false" >> ./src/main/resources/application.properties
+          
+          echo "cloud.aws.s3.credentials.accessKey=$S3_ACCESS_KEY" >> ./src/main/resources/application.properties
+          echo "cloud.aws.s3.credentials.secretKey=$S3_ACCESS_SECRET_KEY" >> ./src/main/resources/application.properties
+          echo "cloud.aws.s3.bucket=$S3_BUCKET_NAME" >> ./src/main/resources/application.properties
+          
+          echo "upload.path=$S3_UPLOAD_PATH" >> ./src/main/resources/application.properties
+          echo "defaultImage.path=$S3_DEFAULT_IMAGE_PATH" >> ./src/main/resources/application.properties
+          
+          echo "jwt.secret.key=$JWT_SECRET_KEY" >> ./src/main/resources/application.properties
+          
+          echo "spring.mail.host=$EMAIL_HOST" >> ./src/main/resources/application.properties
+          echo "spring.mail.port=$EMAIL_PORT" >> ./src/main/resources/application.properties
+          echo "spring.mail.username=$EMAIL_USERNAME" >> ./src/main/resources/application.properties
+          echo "spring.mail.password=$EMAIL_PASSWORD" >> ./src/main/resources/application.properties
+          echo "spring.mail.properties.mail.smtp.auth=true" >> ./src/main/resources/application.properties
+          echo "spring.mail.properties.mail.smtp.starttls.enable=true" >> ./src/main/resources/application.properties
+          echo "spring.mail.properties.mail.smtp.starttls.required=true" >> ./src/main/resources/application.properties
+          echo "spring.mail.properties.mail.smtp.connectiontimeout=5000" >> ./src/main/resources/application.properties
+          echo "spring.mail.properties.mail.smtp.timeout=5000" >> ./src/main/resources/application.properties
+          echo "spring.mail.properties.mail.smtp.writetimeout=5000" >> ./src/main/resources/application.properties
+          echo "spring.mail.auth-code-expiration-millis=1800000" >> ./src/main/resources/application.properties
+          
+          echo "iamport.key=$IAMPORT_KEY" >> ./src/main/resources/application.properties
+          echo "iamport.secret=$IAMPORT_SECRET_KEY" >> ./src/main/resources/application.properties
+          echo "iamport.code=$IAMPORT_CODE" >> ./src/main/resources/application.properties
+          
+          echo "cloud.aws.sqs.queue.name=$SQS_QUEUE_NAME" >> ./src/main/resources/application.properties
+          echo "cloud.aws.sqs.queue.url=$SQS_QUEUE_URL" >> ./src/main/resources/application.properties
+          cd ../../..
+        shell: bash
+        env:
+          MYSQL_URL: ${{ secrets.MYSQL_URL }}
+          MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+
+          REDIS_URL: ${{ secrets.REDIS_URL }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          # AmazonS3FullAccess 권한을 가진 IAM 의 액세스 키
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_ACCESS_SECRET_KEY: ${{ secrets.S3_ACCESS_SECRET_KEY }}
+          S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+          S3_UPLOAD_PATH: ${{ secrets.S3_UPLOAD_PATH }}
+          S3_DEFAULT_IMAGE_PATH: ${{ secrets.S3_DEFAULT_IMAGE_PATH }}
+
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+
+          EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+          EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+          EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+
+          # AmazonSQSFullAccess 권한을 가진 IAM 의 액세스 키
+          IAMPORT_KEY: ${{ secrets.IAMPORT_KEY }}
+          IAMPORT_SECRET_KEY: ${{ secrets.IAMPORT_SECRET_KEY }}
+          IAMPORT_CODE: ${{ secrets.IAMPORT_CODE }}
+
+          SQS_QUEUE_NAME: ${{ secrets.SQS_QUEUE_NAME }}
+          SQS_QUEUE_URL: ${{ secrets.SQS_QUEUE_URL }}
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+        shell: bash
+
+      - name: Build and Test
+        run: ./gradlew build test --stacktrace
+
+
